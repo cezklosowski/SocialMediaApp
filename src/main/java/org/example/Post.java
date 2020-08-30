@@ -5,6 +5,7 @@ import javax.persistence.*;
 @Entity
 public class Post extends IDProvider{
 
+    private String title;
 
     private String text;
 
@@ -13,8 +14,17 @@ public class Post extends IDProvider{
     public Post() {
     }
 
-    public Post(String text) {
+    public Post(String title, String text) {
+        this.title = title;
         this.text = text;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getText() {
@@ -31,5 +41,12 @@ public class Post extends IDProvider{
 
     public void setUserID(int userID) {
         this.userID = userID;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Post: " + getId() +
+                " Title: " + title;
     }
 }

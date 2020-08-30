@@ -31,26 +31,32 @@ public class DataProvider {
 
         // posty
         Post post1 = new Post();
+        post1.setTitle("Tytuł postu 1");
         post1.setText("Treść postu 1, napisana przez użytkownika 1.");
         post1.setUserID(user1.getId());
 
         Post post2 = new Post();
+        post2.setTitle("Tytuł postu 2");
         post2.setText("Treść postu 2, napisana przez użytkownika 1.");
         post2.setUserID(user1.getId());
 
         Post post3 = new Post();
+        post3.setTitle("Tytuł postu 3");
         post3.setText("Treść postu 3, napisana przez użytkownika 2.");
         post3.setUserID(user2.getId());
 
         Post post4 = new Post();
+        post4.setTitle("Tytuł postu 4");
         post4.setText("Treść postu 4, napisana przez użytkownika 3.");
         post4.setUserID(user3.getId());
 
         Post post5 = new Post();
+        post5.setTitle("Tytuł postu 5");
         post5.setText("Treść postu 5, napisana przez użytkownika 3.");
         post5.setUserID(user3.getId());
 
         Post post6 = new Post();
+        post6.setTitle("Tytuł postu 6");
         post6.setText("Treść postu 6, napisana przez użytkownika 4.");
         post6.setUserID(user4.getId());
 

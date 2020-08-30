@@ -2,6 +2,8 @@ package org.example;
 
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class App {
@@ -80,26 +82,31 @@ public class App {
             System.out.println("2. Read the post");
             System.out.println("3. Exit");
             option = scanner.nextLine();
-        } while (option.equals("3"));
 
-        switch (option) {
-            case "1":
-                addPost(entityManager, user);
-                break;
-            case "2":
-                readPost(entityManager, user);
-                break;
-        }
+            switch (option) {
+                case "1":
+                    addPost(entityManager, user);
+                    break;
+                case "2":
+                    readPost(entityManager, user);
+                    break;
+            }
+
+        } while (!option.equals("3"));
 
 
     }
 
     private static void addPost(EntityManager entityManager, User user) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("You're adding a new post. Type here and confirm with [Enter]:");
+        System.out.println("You're adding a new post.");
+        System.out.println("Enter title:");
+        String title = scanner.nextLine();
+        System.out.println("Type here and confirm with [Enter]:");
         String text = scanner.nextLine();
 
         Post post = new Post();
+        post.setTitle(title);
         post.setText(text);
         post.setUserID(user.getId());
 
@@ -107,9 +114,69 @@ public class App {
         entityManager.persist(post);
         entityManager.getTransaction().commit();
 
+        System.out.println("Post added!");
+
     }
 
     private static void readPost(EntityManager entityManager, User user) {
+        Scanner scanner = new Scanner(System.in);
+
+        TypedQuery<Post> query = entityManager.createQuery(
+                "SELECT p FROM Post p", Post.class);
+        List<Post> posts = query.getResultList();
+
+        System.out.println("All posts:");
+        posts.stream()
+                .forEach(post -> System.out.println(post));
+        System.out.println();
+
+        System.out.println("Which post do you want to read?");
+        int postNumber = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("Post nr " + postNumber + ":");
+        System.out.println(posts.get(postNumber - 1).getText());
+
+        System.out.println();
+        System.out.println("Choose option:");
+
+        String option = "";
+        do {
+            System.out.println("1. Back to menu");
+
+            // jeżeli ten użytkownik napisał ten post
+            if (user.getId() == posts.get(postNumber - 1).getUserID()) {
+                System.out.println("2. Edit post.");
+                System.out.println("3. Delete post.");
+            }
+
+            option = scanner.nextLine();
+
+            switch (option) {
+                case "1":
+                    break;
+                case "2":
+                    if (user.getId() == posts.get(postNumber - 1).getUserID()) {
+                        editPost(entityManager, user);
+                    }
+                    break;
+                case "3":
+                    if (user.getId() == posts.get(postNumber - 1).getUserID()) {
+                        deletePost(entityManager, user);
+                    }
+                    break;
+            }
+
+        } while (!option.equals("1"));
+    }
+
+    private static void editPost(EntityManager entityManager, User user) {
 
     }
+
+    private static void deletePost(EntityManager entityManager, User user) {
+
+    }
+
+
 }
+
