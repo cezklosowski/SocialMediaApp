@@ -4,10 +4,8 @@ package org.example;
 import javax.persistence.*;
 import java.util.Scanner;
 
-public class App
-{
-    public static void main( String[] args )
-    {
+public class App {
+    public static void main(String[] args) {
         // otwarcie połączenia z bazą
         EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("jpa.hibernate");
         EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -21,7 +19,7 @@ public class App
         User user = logUser(entityManager);
 
         // menu
-        menu(entityManager,user);
+        menu(entityManager, user);
 
 
         // zamknięcie połączenia z bazą
@@ -30,15 +28,12 @@ public class App
     }
 
 
-
-
-
-    private static User logUser(EntityManager entityManager){
+    private static User logUser(EntityManager entityManager) {
         Scanner scanner = new Scanner(System.in);
         Boolean loginFlag = false;
         User user = new User();
 
-        while(!loginFlag) {
+        while (!loginFlag) {
             System.out.println("Welcome! Please log in.");
 
 
@@ -50,7 +45,7 @@ public class App
             // sprawdzenie danych logowania
             entityManager.getTransaction().begin();
 
-                // pobranie usera z bazy o podanym loginie
+            // pobranie usera z bazy o podanym loginie
             try {
                 TypedQuery<User> typedQuery = entityManager.createQuery(
                         "SELECT u FROM User u WHERE u.login = :login AND u.password = :password ", User.class);
@@ -61,7 +56,7 @@ public class App
                 loginFlag = true;
                 System.out.println("Login is correct!");
             }
-                // jeżeli nie znajdzie usera w bazie o podanych danych
+            // jeżeli nie znajdzie usera w bazie o podanych danych
             catch (NoResultException ex) {
                 System.out.println("Incorrect LOGIN or PASSWORD!!!");
                 System.out.println("Try again!");
@@ -74,7 +69,7 @@ public class App
         return user;
     }
 
-    private static void menu(EntityManager entityManager, User user){
+    private static void menu(EntityManager entityManager, User user) {
         Scanner scanner = new Scanner(System.in);
 
         String option = "";
@@ -85,23 +80,36 @@ public class App
             System.out.println("2. Read the post");
             System.out.println("3. Exit");
             option = scanner.nextLine();
-        } while(!option.equals("3"));
+        } while (option.equals("3"));
 
-        switch (option){
+        switch (option) {
             case "1":
-                addPost(user);
+                addPost(entityManager, user);
+                break;
             case "2":
-                readPost(user);
+                readPost(entityManager, user);
+                break;
         }
 
 
     }
 
-    private static void addPost(User user){
+    private static void addPost(EntityManager entityManager, User user) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("You're adding a new post. Type here and confirm with [Enter]:");
+        String text = scanner.nextLine();
+
+        Post post = new Post();
+        post.setText(text);
+        post.setUserID(user.getId());
+
+        entityManager.getTransaction().begin();
+        entityManager.persist(post);
+        entityManager.getTransaction().commit();
 
     }
 
-    private static void readPost(User user){
+    private static void readPost(EntityManager entityManager, User user) {
 
     }
 }
