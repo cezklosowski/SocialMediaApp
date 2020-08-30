@@ -53,32 +53,40 @@ public class App
     }
 
     private static void logUser(EntityManager entityManager){
-        System.out.println("Welcome! Please log in.");
         Scanner scanner = new Scanner(System.in);
+        Boolean loginFlag = false;
+        while(!loginFlag) {
+            System.out.println("Welcome! Please log in.");
 
-        System.out.println("Enter LOGIN:");
-        String login = scanner.nextLine();
-        System.out.println("Enter PASSWORD:");
-        String password = scanner.nextLine();
 
-        // sprawdzenie danych logowania
-        entityManager.getTransaction().begin();
+            System.out.println("Enter LOGIN:");
+            String login = scanner.nextLine();
+            System.out.println("Enter PASSWORD:");
+            String password = scanner.nextLine();
 
-        // pobranie usera z bazy o podanym loginie
-        try {
-            TypedQuery<User> typedQuery = entityManager.createQuery(
-                    "SELECT e FROM User e WHERE e.login = :login AND e.password = :password ", User.class);
-            typedQuery.setParameter("login", login);
-            typedQuery.setParameter("password", password);
-            User user = typedQuery.getSingleResult();
+            // sprawdzenie danych logowania
+            entityManager.getTransaction().begin();
 
-            System.out.println("Logowanie poprawne!");
+            // pobranie usera z bazy o podanym loginie
+            try {
+                TypedQuery<User> typedQuery = entityManager.createQuery(
+                        "SELECT e FROM User e WHERE e.login = :login AND e.password = :password ", User.class);
+                typedQuery.setParameter("login", login);
+                typedQuery.setParameter("password", password);
+                User user = typedQuery.getSingleResult();
+
+                loginFlag = true;
+                System.out.println("Login is correct!");
+            }
+            // jeżeli nie znajdzie usera w bazie o podanych danych
+            catch (NoResultException ex) {
+                System.out.println("Incorrect LOGIN or PASSWORD!!!");
+                System.out.println("Try again!");
+                System.out.println("..................................");
+                System.out.println();
+            }
+
+            entityManager.getTransaction().commit();
         }
-        // jeżeli nie znajdzie usera w bazie o podanych danych
-        catch (NoResultException ex){
-            System.out.println("Błędne dane logowania!!!");
-        }
-
-        entityManager.getTransaction().commit();
     }
 }
