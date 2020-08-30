@@ -14,11 +14,14 @@ public class App
 
 
         // wstępne dodanie użytkowników do bazy
-        generateUsers(entityManager);
+        DataProvider.generateData(entityManager);
 
 
         // logowanie użytkownika
-        logUser(entityManager);
+        User user = logUser(entityManager);
+
+        // menu
+        menu(entityManager,user);
 
 
         // zamknięcie połączenia z bazą
@@ -26,35 +29,15 @@ public class App
         entityManagerFactory.close();
     }
 
-    private static void generateUsers(EntityManager entityManager){
-        User user1 = new User();
-        user1.setLogin("login1");
-        user1.setPassword("password1");
 
-        User user2 = new User();
-        user2.setLogin("login2");
-        user2.setPassword("password2");
 
-        User user3 = new User();
-        user3.setLogin("login3");
-        user3.setPassword("password3");
 
-        User user4 = new User();
-        user4.setLogin("login4");
-        user4.setPassword("password4");
 
-        entityManager.getTransaction().begin();
-        entityManager.persist(user1);
-        entityManager.persist(user2);
-        entityManager.persist(user3);
-        entityManager.persist(user4);
-        entityManager.getTransaction().commit();
-
-    }
-
-    private static void logUser(EntityManager entityManager){
+    private static User logUser(EntityManager entityManager){
         Scanner scanner = new Scanner(System.in);
         Boolean loginFlag = false;
+        User user = new User();
+
         while(!loginFlag) {
             System.out.println("Welcome! Please log in.");
 
@@ -67,18 +50,18 @@ public class App
             // sprawdzenie danych logowania
             entityManager.getTransaction().begin();
 
-            // pobranie usera z bazy o podanym loginie
+                // pobranie usera z bazy o podanym loginie
             try {
                 TypedQuery<User> typedQuery = entityManager.createQuery(
-                        "SELECT e FROM User e WHERE e.login = :login AND e.password = :password ", User.class);
+                        "SELECT u FROM User u WHERE u.login = :login AND u.password = :password ", User.class);
                 typedQuery.setParameter("login", login);
                 typedQuery.setParameter("password", password);
-                User user = typedQuery.getSingleResult();
+                user = typedQuery.getSingleResult();
 
                 loginFlag = true;
                 System.out.println("Login is correct!");
             }
-            // jeżeli nie znajdzie usera w bazie o podanych danych
+                // jeżeli nie znajdzie usera w bazie o podanych danych
             catch (NoResultException ex) {
                 System.out.println("Incorrect LOGIN or PASSWORD!!!");
                 System.out.println("Try again!");
@@ -88,5 +71,37 @@ public class App
 
             entityManager.getTransaction().commit();
         }
+        return user;
+    }
+
+    private static void menu(EntityManager entityManager, User user){
+        Scanner scanner = new Scanner(System.in);
+
+        String option = "";
+
+        do {
+            System.out.println("MENU");
+            System.out.println("1. Add new post");
+            System.out.println("2. Read the post");
+            System.out.println("3. Exit");
+            option = scanner.nextLine();
+        } while(!option.equals("3"));
+
+        switch (option){
+            case "1":
+                addPost(user);
+            case "2":
+                readPost(user);
+        }
+
+
+    }
+
+    private static void addPost(User user){
+
+    }
+
+    private static void readPost(User user){
+
     }
 }
