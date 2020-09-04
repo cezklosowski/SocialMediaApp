@@ -259,13 +259,10 @@ public class App {
         do {
             System.out.println("Choose option:");
             System.out.println("1. Add comment");
-            // jeżeli ten użytkownik napisał ten komentarz
-            if (user.getId() == post.getUserID()) {
-                System.out.println("2. Edit comment.");
-                System.out.println("3. Delete comment.");
-            }
-
+            System.out.println("2. Edit comment.");
+            System.out.println("3. Delete comment.");
             System.out.println("4. Back to menu.");
+
             option = scanner.nextLine();
 
             switch (option) {
@@ -276,7 +273,7 @@ public class App {
                     editComment(entityManager, user, post);
                     break;
                 case "3":
-                    //deleteComment(entityManager, user, post);
+                    deleteComment(entityManager, user, post);
                     break;
                 case "4":
                     break;
@@ -314,12 +311,59 @@ public class App {
         typedQuery.setParameter("userid", user.getId());
         List<Comment> comments = typedQuery.getResultList();
 
+        if (comments.size() == 0){
+            System.out.println("There are no your comments in this post.");
+        } else {
+
+            System.out.println("All your comments:");
+            comments.stream()
+                    .forEach(comment -> System.out.println(comment));
+            System.out.println();
+
+
+            System.out.println("Which comment do you want to edit?");
+            try {
+                int commentNumber = scanner.nextInt();
+                scanner.nextLine();
+                TypedQuery<Comment> typedQuery2 = entityManager.createQuery(
+                        "SELECT c FROM Comment c WHERE c.postID = :postid AND c.userID = :userid", Comment.class);
+                typedQuery2.setParameter("postid", commentNumber);
+                typedQuery2.setParameter("userid", user.getId());
+                Comment comment = typedQuery2.getSingleResult();
+
+                System.out.println("Enter text:");
+                String newText = scanner.nextLine();
+
+                entityManager.getTransaction().begin();
+                comment.setText(newText);
+                entityManager.getTransaction().commit();
+
+
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("There is no comment with the given number");
+            } catch (NoResultException e) {
+                System.out.println("There is no comment with the given number");
+            }
+        }
+
+
+    }
+
+    private static void deleteComment(EntityManager entityManager, User user, Post post) {
+        Scanner scanner = new Scanner(System.in);
+
+        TypedQuery<Comment> typedQuery = entityManager.createQuery(
+                "SELECT c FROM Comment c WHERE c.postID = :postid AND c.userID = :userid", Comment.class);
+        typedQuery.setParameter("postid", post.getId());
+        typedQuery.setParameter("userid", user.getId());
+        List<Comment> comments = typedQuery.getResultList();
+
         System.out.println("All your comments:");
         comments.stream()
                 .forEach(comment -> System.out.println(comment));
         System.out.println();
 
-        System.out.println("Which comment do you want to edit?");
+        System.out.println("Which comment do you want to delete?");
         try {
             int commentNumber = scanner.nextInt();
             scanner.nextLine();
@@ -329,21 +373,23 @@ public class App {
             typedQuery2.setParameter("userid", user.getId());
             Comment comment = typedQuery2.getSingleResult();
 
-            System.out.println("Enter text:");
-            String newText = scanner.nextLine();
-
-            entityManager.getTransaction().begin();
-            comment.setText(newText);
-            entityManager.getTransaction().commit();
-
+            System.out.println("Do you want to delete the comment? y/n");
+            String ifDelete = scanner.nextLine();
+            if (ifDelete.equals("y")) {
+                entityManager.getTransaction().begin();
+                entityManager.remove(comment);
+                entityManager.getTransaction().commit();
+                System.out.println("Comment has been deleted");
+            } else {
+                System.out.println("Comment has not been deleted");
+            }
 
 
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("There is no post with the given number");
+            System.out.println("There is no comment with the given number");
         } catch (NoResultException e) {
-            System.out.println("There is no post with the given number");
+            System.out.println("There is no comment with the given number");
         }
-
 
     }
 
