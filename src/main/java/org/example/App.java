@@ -145,7 +145,7 @@ public class App {
             System.out.println("1. Back to menu");
 
             // jeżeli ten użytkownik napisał ten post
-            if (user.getId() == posts.get(postNumber - 1).getUserID()) {
+            if (user.getId() == post.getUserID()) {
                 System.out.println("2. Edit post.");
                 System.out.println("3. Delete post.");
             }
@@ -156,13 +156,13 @@ public class App {
                 case "1":
                     break;
                 case "2":
-                    if (user.getId() == posts.get(postNumber - 1).getUserID()) {
-                        editPost(entityManager, user, post);
+                    if (user.getId() == post.getUserID()) {
+                        editPost(entityManager, post);
                     }
                     break;
                 case "3":
-                    if (user.getId() == posts.get(postNumber - 1).getUserID()) {
-                        deletePost(entityManager, user);
+                    if (user.getId() == post.getUserID()) {
+                        deletePost(entityManager, post);
                     }
                     break;
             }
@@ -170,7 +170,7 @@ public class App {
         } while (!option.equals("1"));
     }
 
-    private static void editPost(EntityManager entityManager, User user, Post post) {
+    private static void editPost(EntityManager entityManager, Post post) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("You're editing the post.");
 
@@ -205,13 +205,19 @@ public class App {
         } while (!option.equals("3"));
     }
 
-    private static void deletePost(EntityManager entityManager, User user) {
+    private static void deletePost(EntityManager entityManager, Post post) {
+        Scanner scanner = new Scanner(System.in);
 
-        //System.out.println("Do you want to delete the post? y/n");
-
-        //entityManager.getTransaction().begin();
-        //entityManager.remove(post);
-        //entityManager.getTransaction().commit();
+        System.out.println("Do you want to delete the post? y/n");
+        String ifDelete = scanner.nextLine();
+        if (ifDelete.equals("y")) {
+            entityManager.getTransaction().begin();
+            entityManager.remove(post);
+            entityManager.getTransaction().commit();
+            System.out.println("Post has been deleted");
+        } else {
+            System.out.println("Post has not been deleted");
+        }
 
     }
 
