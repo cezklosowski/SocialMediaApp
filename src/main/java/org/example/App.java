@@ -150,11 +150,12 @@ public class App {
             String option = "";
             do {
                 System.out.println("1. Back to menu");
+                System.out.println("2. Read comments");
 
                 // jeżeli ten użytkownik napisał ten post
                 if (user.getId() == post.getUserID()) {
-                    System.out.println("2. Edit post.");
-                    System.out.println("3. Delete post.");
+                    System.out.println("3. Edit post.");
+                    System.out.println("4. Delete post.");
                 }
 
                 option = scanner.nextLine();
@@ -163,20 +164,23 @@ public class App {
                     case "1":
                         break;
                     case "2":
+                        readComment(entityManager, post, user);
+                        break;
+                    case "3":
                         if (user.getId() == post.getUserID()) {
                             editPost(entityManager, post);
                         }
                         break;
-                    case "3":
+                    case "4":
                         if (user.getId() == post.getUserID()) {
                             deletePost(entityManager, post);
                         }
                         break;
                 }
-            } while (!option.equals("1") && !option.equals("3"));
+            } while (!option.equals("1") && !option.equals("4"));
         } catch (IndexOutOfBoundsException e) {
             System.out.println("There is no post with the given number");
-        } catch (NoResultException e){
+        } catch (NoResultException e) {
             System.out.println("There is no post with the given number");
         }
     }
@@ -230,6 +234,67 @@ public class App {
             System.out.println("Post has not been deleted");
         }
 
+    }
+
+    private static void readComment(EntityManager entityManager, Post post, User user) {
+        Scanner scanner = new Scanner(System.in);
+
+        TypedQuery<Comment> typedQuery = entityManager.createQuery(
+                "SELECT c FROM Comment c WHERE c.postID = :id", Comment.class);
+        typedQuery.setParameter("id", post.getId());
+        List<Comment> comments = typedQuery.getResultList();
+
+        if (comments.size() == 0) {
+            System.out.println("This post has no comments yet");
+        } else {
+            System.out.println("All comments:");
+            comments.stream()
+                    .forEach(comment -> System.out.println(comment));
+            System.out.println();
+        }
+
+        System.out.println();
+
+        String option = "";
+        do {
+            System.out.println("Choose option:");
+            System.out.println("1. Add comment");
+            System.out.println("2. ");
+            System.out.println("3. Back to menu.");
+            option = scanner.nextLine();
+
+            switch (option) {
+                case "1":
+                    addComment(entityManager, user, post);
+                    break;
+                case "2":
+
+                    break;
+                case "3":
+                    break;
+            }
+        } while (!option.equals("3"));
+
+
+    }
+
+    private static void addComment(EntityManager entityManager, User user, Post post) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("You're adding a new comment.");
+        System.out.println("Enter text [Enter]:");
+        String text = scanner.nextLine();
+
+
+        Comment comment = new Comment();
+        comment.setText(text);
+        comment.setPostID(post.getId());
+        comment.setUserID(user.getId());
+
+        entityManager.getTransaction().begin();
+        entityManager.persist(comment);
+        entityManager.getTransaction().commit();
+
+        System.out.println("Comment added!");
     }
 
 
