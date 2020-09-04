@@ -2,7 +2,6 @@ package org.example;
 
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,19 +15,16 @@ public class App {
         // wstępne dodanie użytkowników do bazy
         DataProvider.generateData(entityManager);
 
-
         // logowanie użytkownika
         User user = logUser(entityManager);
 
         // menu
         menu(entityManager, user);
 
-
         // zamknięcie połączenia z bazą
         entityManager.close();
         entityManagerFactory.close();
     }
-
 
     private static User logUser(EntityManager entityManager) {
         Scanner scanner = new Scanner(System.in);
@@ -91,10 +87,7 @@ public class App {
                     readPost(entityManager, user);
                     break;
             }
-
         } while (!option.equals("3"));
-
-
     }
 
     private static void addPost(EntityManager entityManager, User user) {
@@ -115,7 +108,6 @@ public class App {
         entityManager.getTransaction().commit();
 
         System.out.println("Post added!");
-
     }
 
     private static void readPost(EntityManager entityManager, User user) {
@@ -233,7 +225,6 @@ public class App {
         } else {
             System.out.println("Post has not been deleted");
         }
-
     }
 
     private static void readComments(EntityManager entityManager, Post post, User user) {
@@ -279,8 +270,6 @@ public class App {
                     break;
             }
         } while (!option.equals("4"));
-
-
     }
 
     private static void addComment(EntityManager entityManager, User user, Post post) {
@@ -288,7 +277,6 @@ public class App {
         System.out.println("You're adding a new comment.");
         System.out.println("Enter text [Enter]:");
         String text = scanner.nextLine();
-
 
         Comment comment = new Comment();
         comment.setText(text);
@@ -320,7 +308,6 @@ public class App {
                     .forEach(comment -> System.out.println(comment));
             System.out.println();
 
-
             System.out.println("Which comment do you want to edit?");
             try {
                 int commentNumber = scanner.nextInt();
@@ -338,15 +325,12 @@ public class App {
                 comment.setText(newText);
                 entityManager.getTransaction().commit();
 
-
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("There is no comment with the given number");
             } catch (NoResultException e) {
                 System.out.println("There is no comment with the given number");
             }
         }
-
-
     }
 
     private static void deleteComment(EntityManager entityManager, User user, Post post) {
@@ -383,16 +367,11 @@ public class App {
             } else {
                 System.out.println("Comment has not been deleted");
             }
-
-
         } catch (IndexOutOfBoundsException e) {
             System.out.println("There is no comment with the given number");
         } catch (NoResultException e) {
             System.out.println("There is no comment with the given number");
         }
-
     }
-
-
 }
 
