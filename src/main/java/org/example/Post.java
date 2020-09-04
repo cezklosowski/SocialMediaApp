@@ -1,15 +1,23 @@
 package org.example;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Post extends IDProvider{
 
+    @Column
     private String title;
 
+    @Column
     private String text;
 
+    @Column
     private int userID;
+
+    @OneToMany
+    @JoinColumn
+    private List<Comment> comments;
 
     public Post() {
     }
@@ -42,7 +50,6 @@ public class Post extends IDProvider{
     public void setUserID(int userID) {
         this.userID = userID;
     }
-
 
     @Override
     public String toString() {

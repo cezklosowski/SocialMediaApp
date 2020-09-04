@@ -1,6 +1,8 @@
 package org.example;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import java.util.List;
 
 public class DataProvider {
     public static void generateData(EntityManager entityManager){
@@ -60,6 +62,8 @@ public class DataProvider {
         post6.setText("Treść postu 6, napisana przez użytkownika 4.");
         post6.setUserID(user4.getId());
 
+
+
         entityManager.getTransaction().begin();
         entityManager.persist(post1);
         entityManager.persist(post2);
@@ -68,6 +72,34 @@ public class DataProvider {
         entityManager.persist(post5);
         entityManager.persist(post6);
         entityManager.getTransaction().commit();
+
+
+        TypedQuery<Post> query = entityManager.createQuery(
+                "SELECT p FROM Post p", Post.class);
+        List<Post> posts = query.getResultList();
+
+        // komentarze
+        Comment comment1 = new Comment();
+        comment1.setText("Komentarz 1 do Postu 1, napisany przez użytkownika 1");
+        comment1.setPostID(posts.get(0).getId());
+        comment1.setUserID(user1.getId());
+
+        Comment comment2 = new Comment();
+        comment2.setText("Komentarz 2 do Postu 1, napisany przez użytkownika 2");
+        comment2.setPostID(posts.get(0).getId());
+        comment2.setUserID(user2.getId());
+
+        Comment comment3 = new Comment();
+        comment3.setText("Komentarz 3 do Postu 2, napisany przez użytkownika 3");
+        comment3.setPostID(posts.get(1).getId());
+        comment3.setUserID(user3.getId());
+
+        entityManager.getTransaction().begin();
+        entityManager.persist(comment1);
+        entityManager.persist(comment2);
+        entityManager.persist(comment3);
+        entityManager.getTransaction().commit();
+
 
     }
 
