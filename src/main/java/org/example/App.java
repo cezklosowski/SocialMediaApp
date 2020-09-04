@@ -131,43 +131,54 @@ public class App {
         System.out.println();
 
         System.out.println("Which post do you want to read?");
-        int postNumber = scanner.nextInt();
-        scanner.nextLine();
-        System.out.println("Post nr " + postNumber + ":");
-        Post post = posts.get(postNumber - 1);
-        System.out.println(post.getText());
+        try {
+            int postNumber = scanner.nextInt();
+            scanner.nextLine();
 
-        System.out.println();
-        System.out.println("Choose option:");
+            TypedQuery<Post> typedQuery = entityManager.createQuery(
+                    "SELECT p FROM Post p WHERE p.id = :id", Post.class);
+            typedQuery.setParameter("id", postNumber);
+            Post post = typedQuery.getSingleResult();
 
-        String option = "";
-        do {
-            System.out.println("1. Back to menu");
+            System.out.println("Post nr " + postNumber + ":");
 
-            // jeżeli ten użytkownik napisał ten post
-            if (user.getId() == post.getUserID()) {
-                System.out.println("2. Edit post.");
-                System.out.println("3. Delete post.");
-            }
+            System.out.println(post.getText());
 
-            option = scanner.nextLine();
+            System.out.println();
+            System.out.println("Choose option:");
 
-            switch (option) {
-                case "1":
-                    break;
-                case "2":
-                    if (user.getId() == post.getUserID()) {
-                        editPost(entityManager, post);
-                    }
-                    break;
-                case "3":
-                    if (user.getId() == post.getUserID()) {
-                        deletePost(entityManager, post);
-                    }
-                    break;
-            }
+            String option = "";
+            do {
+                System.out.println("1. Back to menu");
 
-        } while (!option.equals("1"));
+                // jeżeli ten użytkownik napisał ten post
+                if (user.getId() == post.getUserID()) {
+                    System.out.println("2. Edit post.");
+                    System.out.println("3. Delete post.");
+                }
+
+                option = scanner.nextLine();
+
+                switch (option) {
+                    case "1":
+                        break;
+                    case "2":
+                        if (user.getId() == post.getUserID()) {
+                            editPost(entityManager, post);
+                        }
+                        break;
+                    case "3":
+                        if (user.getId() == post.getUserID()) {
+                            deletePost(entityManager, post);
+                        }
+                        break;
+                }
+            } while (!option.equals("1") && !option.equals("3"));
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("There is no post with the given number");
+        } catch (NoResultException e){
+            System.out.println("There is no post with the given number");
+        }
     }
 
     private static void editPost(EntityManager entityManager, Post post) {
