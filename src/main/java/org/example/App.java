@@ -134,7 +134,8 @@ public class App {
         int postNumber = scanner.nextInt();
         scanner.nextLine();
         System.out.println("Post nr " + postNumber + ":");
-        System.out.println(posts.get(postNumber - 1).getText());
+        Post post = posts.get(postNumber - 1);
+        System.out.println(post.getText());
 
         System.out.println();
         System.out.println("Choose option:");
@@ -156,7 +157,7 @@ public class App {
                     break;
                 case "2":
                     if (user.getId() == posts.get(postNumber - 1).getUserID()) {
-                        editPost(entityManager, user);
+                        editPost(entityManager, user, post);
                     }
                     break;
                 case "3":
@@ -169,11 +170,48 @@ public class App {
         } while (!option.equals("1"));
     }
 
-    private static void editPost(EntityManager entityManager, User user) {
+    private static void editPost(EntityManager entityManager, User user, Post post) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("You're editing the post.");
 
+        String option = "";
+        do {
+            System.out.println("Choose option:");
+            System.out.println("1. Edit title");
+            System.out.println("2. Edit text.");
+            System.out.println("3. Cancel. Back to menu.");
+            option = scanner.nextLine();
+
+            switch (option) {
+                case "1":
+                    System.out.println("Enter new title");
+                    String newTitle = scanner.nextLine();
+
+                    entityManager.getTransaction().begin();
+                    post.setTitle(newTitle);
+                    entityManager.getTransaction().commit();
+                    break;
+                case "2":
+                    System.out.println("Enter new text");
+                    String newText = scanner.nextLine();
+
+                    entityManager.getTransaction().begin();
+                    post.setText(newText);
+                    entityManager.getTransaction().commit();
+                    break;
+                case "3":
+                    break;
+            }
+        } while (!option.equals("3"));
     }
 
     private static void deletePost(EntityManager entityManager, User user) {
+
+        //System.out.println("Do you want to delete the post? y/n");
+
+        //entityManager.getTransaction().begin();
+        //entityManager.remove(post);
+        //entityManager.getTransaction().commit();
 
     }
 
